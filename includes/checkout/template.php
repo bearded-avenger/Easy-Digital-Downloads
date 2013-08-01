@@ -78,30 +78,35 @@ function edd_show_purchase_form() {
 
 		do_action( 'edd_purchase_form_before_register_login' );
 
-		if( isset( $edd_options['show_register_form'] ) && ! is_user_logged_in() && ! isset( $_GET['login'] ) ) : ?>
+		if( isset( $edd_options['show_register_form'] ) && ! is_user_logged_in() && ! isset( $_GET['login'] ) ) { ?>
 			<div id="edd_checkout_login_register">
 				<?php do_action( 'edd_purchase_form_register_fields' ); ?>
 			</div>
-		<?php elseif( isset( $edd_options['show_register_form'] ) && ! is_user_logged_in() && isset( $_GET['login'] ) ) : ?>
+			<?php
+		} elseif( isset( $edd_options['show_register_form'] ) && ! is_user_logged_in() && isset( $_GET['login'] ) ) { ?>
 			<div id="edd_checkout_login_register">
 				<?php do_action( 'edd_purchase_form_login_fields' ); ?>
 			</div>
-		<?php endif; ?>
+			<?php
+		}
 
-		<?php if( ( !isset( $_GET['login'] ) && is_user_logged_in() ) || !isset( $edd_options['show_register_form'] ) ) {
+		if( ( ! isset( $_GET['login'] ) && is_user_logged_in() ) || ! isset( $edd_options['show_register_form'] ) ) {
+
 			do_action( 'edd_purchase_form_after_user_info' );
+
+			do_action( 'edd_purchase_form_before_cc_form' );
+
+			// Load the credit card form and allow gateways to load their own if they wish
+			if ( has_action( 'edd_' . $payment_mode . '_cc_form' ) ) {
+				do_action( 'edd_' . $payment_mode . '_cc_form' );
+			} else {
+				do_action( 'edd_cc_form' );
+			}
+
+			do_action( 'edd_purchase_form_after_cc_form' );
+
 		}
 
-		do_action( 'edd_purchase_form_before_cc_form' );
-
-		// Load the credit card form and allow gateways to load their own if they wish
-		if ( has_action( 'edd_' . $payment_mode . '_cc_form' ) ) {
-			do_action( 'edd_' . $payment_mode . '_cc_form' );
-		} else {
-			do_action( 'edd_cc_form' );
-		}
-
-		do_action( 'edd_purchase_form_after_cc_form' );
 	} else {
 		// Can't checkout
 		do_action( 'edd_purchase_form_no_access' );
